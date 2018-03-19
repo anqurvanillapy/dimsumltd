@@ -17,7 +17,7 @@ my grammar Monash {
     }
 
     token bind-op   { '>>=' }
-    token arg       { \w+ }
+    token arg       { ('"' (<!before '"'> . )* '"' | \w+ ) }
 
     method panic($/, $err) {
         my $pos = $/.CURSOR.pos;

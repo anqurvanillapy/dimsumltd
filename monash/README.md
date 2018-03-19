@@ -1,6 +1,6 @@
 # Monash
 
-Write shell script in a monadic way.
+Write shell scripts in a monadic way.
 
 ## Example
 
