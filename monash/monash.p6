@@ -7,7 +7,7 @@ my grammar Monash {
     }
 
     rule expr {
-        | <term> + % <bind-op>
+        | <term> + % <monad-op>
         | { self.panic($/, "Bad expression") }
     }
 
@@ -16,8 +16,11 @@ my grammar Monash {
         | { self.panic($/, "Bad commands") }
     }
 
-    token bind-op   { '>>=' }
-    token arg       { ('"' (<!before '"'> . )* '"' | \w+ ) }
+    proto rule monad-op     {*}
+    rule monad-op:sym<then> { '>>' }
+    rule monad-op:sym<bind> { '>>=' }
+
+    token arg   { ('"' (<!before '"'> . )* '"' | \w+ ) }
 
     method panic($/, $err) {
         my $pos = $/.CURSOR.pos;
@@ -28,23 +31,31 @@ my grammar Monash {
 my class MonashActions {
     method TOP($/) {
         make $<expr>.made;
+        say $<expr>.made;
     }
 
     method expr($/) {
-        make join(' | ', map *.made, $<term>);
+        my @terms = map *.made, $<term>;
+        my @ops = map *.made, $<monad-op>;
+        @ops.push(";");
+        make flat(@terms Z @ops).join(" ");
     }
 
+    method monad-op:sym<then>($/) { make ";"; }
+    method monad-op:sym<bind>($/) { make "|"; }
+
     method term($/) {
-        make $<arg>.join(' ');
+        make $<arg>.join(" ");
     }
 }
 
 sub MAIN($src = (@*ARGS[0] // slurp)) {
     try Monash.parse($src, actions => MonashActions);
-    if $! {
-        say "Monash failed ", $!.message;
-    } elsif $/ {
+
+    if $/ {
         shell $/.made;
+    } elsif $! {
+        say "Monash failed ", $!.message;
     } else {
         die "Monash parsing failed."
     }
