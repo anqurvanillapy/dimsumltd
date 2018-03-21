@@ -1,6 +1,6 @@
-#!/usr/bin/env perl6
+unit module Monash;
 
-my grammar Monash {
+my grammar Monash::Compiler {
     token TOP {
         | <.ws> <expr>
         | { self.panic($/, "Bad expression") }
@@ -24,14 +24,13 @@ my grammar Monash {
 
     method panic($/, $err) {
         my $pos = $/.CURSOR.pos;
-        die "at $pos\: $err";
+        die "(at $pos) $err";
     }
 }
 
-my class MonashActions {
+my class Monash::Actions {
     method TOP($/) {
         make $<expr>.made;
-        say $<expr>.made;
     }
 
     method expr($/) {
@@ -46,17 +45,5 @@ my class MonashActions {
 
     method term($/) {
         make $<arg>.join(" ");
-    }
-}
-
-sub MAIN($src = (@*ARGS[0] // slurp)) {
-    try Monash.parse($src, actions => MonashActions);
-
-    if $/ {
-        shell $/.made;
-    } elsif $! {
-        say "Monash failed ", $!.message;
-    } else {
-        die "Monash parsing failed."
     }
 }

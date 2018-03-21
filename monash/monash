@@ -1,0 +1,16 @@
+#!/usr/bin/env perl6
+
+use lib 'lib';
+use Monash;
+
+sub MAIN($src = (@*ARGS[0] // slurp)) {
+    try Monash::Compiler.parse($src, actions => Monash::Actions);
+
+    if $/ {
+        shell $/.made;
+    } elsif $! {
+        say "Monash failed: ", $!.message;
+    } else {
+        die "Monash compilation failed."
+    }
+}

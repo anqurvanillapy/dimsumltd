@@ -5,5 +5,15 @@ Write shell scripts in a monadic way.
 ## Example
 
 ```bash
-$ perl6 monash.p6 "echo Hello, Monash! >>= cat"
+$ ./monash "fortune >> echo Meh >>= cowsay"
+Don't Worry, Be Happy.
+		-- Meher Baba
+ _____
+< Meh >
+ -----
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
 ```
