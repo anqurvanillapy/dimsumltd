@@ -6,7 +6,7 @@
 
 ## Menu
 
-* monash: Write shell scripts in a monadic way
+* [monash](./monash): Write Shell the monadic way
 
 ## License
 
